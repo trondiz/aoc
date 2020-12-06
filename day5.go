@@ -17,8 +17,8 @@ func check(e error) {
 }
 
 func getID(y string) int {
-	r := ""
-	c := ""
+	r := strings.NewReplacer("B", "1", "F", "0", "L", "0", "R", "1").Replace(y)
+	/*r := ""
 	for i := range y {
 		switch y[i] {
 		case 'B':
@@ -26,15 +26,14 @@ func getID(y string) int {
 		case 'F':
 			r += "0"
 		case 'L':
-			c += "0"
+			r += "0"
 		case 'R':
-			c += "1"
+			r += "1"
 		}
-	}
+	}*/
 
-	ri, _ := strconv.ParseInt(r, 2, 8)
-	ci, _ := strconv.ParseInt(c, 2, 4)
-	return int(ri*8 + ci)
+	ri, _ := strconv.ParseInt(r, 2, 11)
+	return int(ri)
 }
 
 func main() {
