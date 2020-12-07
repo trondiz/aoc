@@ -24,8 +24,8 @@ func main() {
 	inputtelapsed := time.Since(tinput)
 	fmt.Println("Read data:", inputtelapsed)
 	tinput = time.Now()
-	c := 0
 
+	c := 0
 	for _, v := range groups {
 		arb := []bool{false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false}
 		for _, q := range v {
