@@ -89,7 +89,6 @@ func findJump(a, b int) int {
 	c := a
 	d := b
 	for b != 0 {
-		fmt.Println(a)
 		t := b
 		b = a % b
 		a = t
