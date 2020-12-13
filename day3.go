@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -20,51 +19,91 @@ func mAtoi(v string) int {
 	return c
 }
 
-func slope(r int, d int, forest []string) int {
-	mapl := len(forest[0])
-	tco := 0
-	x := 0
-	y := 0
-	for y < len(forest) {
-		if forest[y][x] == 35 {
-			tco++
-		}
-		x = (x + r) % mapl
-		y += d
-	}
-	return tco
+type pos struct {
+	x, y int
 }
 
 func main() {
 	tinput := time.Now()
 
-	b, err := ioutil.ReadFile("d3.data")
+	dir, err := ioutil.ReadFile("d3.data")
 	check(err)
-	forest := strings.Split(string(b), "\n")
 
 	inputtelapsed := time.Since(tinput)
 	log.Println("Read data:", inputtelapsed)
 	tinput = time.Now()
+	g := map[pos]int{pos{x: 0, y: 0}: 1}
 
-	// 46 == .
-	// 35 == #
-	mapl := len(forest[0])
+	c := 0
 	x := 0
-	tc := 0
-	for y := range forest {
-		if forest[y][x] == 35 {
-			tc++
+	y := 0
+	for _, d := range dir {
+		switch d {
+		case 'v':
+			y--
+			g[pos{x: x, y: y}]++
+		case '>':
+			x++
+			g[pos{x: x, y: y}]++
+		case '^':
+			y++
+			g[pos{x: x, y: y}]++
+		case '<':
+			x--
+			g[pos{x: x, y: y}]++
 		}
-		x = (x + 3) % mapl
+
 	}
+	c = len(g)
 	inputtelapsed = time.Since(tinput)
 	log.Println("Time p1:", inputtelapsed)
-	log.Println(tc)
-
+	log.Println(c)
 	tinput = time.Now()
-	ml := slope(1, 1, forest) * slope(3, 1, forest) * slope(5, 1, forest) * slope(7, 1, forest) * slope(1, 2, forest)
+
+	g = map[pos]int{pos{x: 0, y: 0}: 1}
+
+	c = 0
+	x = 0
+	y = 0
+	rx := 0
+	ry := 0
+	for i, d := range dir {
+		if i%2 == 0 {
+			switch d {
+			case 'v':
+				y--
+				g[pos{x: x, y: y}]++
+			case '>':
+				x++
+				g[pos{x: x, y: y}]++
+			case '^':
+				y++
+				g[pos{x: x, y: y}]++
+			case '<':
+				x--
+				g[pos{x: x, y: y}]++
+			}
+		} else {
+			switch d {
+			case 'v':
+				ry--
+				g[pos{x: rx, y: ry}]++
+			case '>':
+				rx++
+				g[pos{x: rx, y: ry}]++
+			case '^':
+				ry++
+				g[pos{x: rx, y: ry}]++
+			case '<':
+				rx--
+				g[pos{x: rx, y: ry}]++
+			}
+		}
+
+	}
+	c = len(g)
 
 	inputtelapsed = time.Since(tinput)
 	log.Println("Time p2:", inputtelapsed)
-	log.Println(ml)
+	log.Println(c)
 }

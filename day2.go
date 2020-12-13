@@ -1,14 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 
 	"strconv"
 	"strings"
 	"time"
-
-	pcre "github.com/gijsbers/go-pcre"
 )
 
 func check(e error) {
@@ -22,32 +21,8 @@ func mAtoi(v string) int {
 	return c
 }
 
-func passIsValid(min int, max int, letter string, pass string) bool {
-	c := strings.Count(pass, letter)
-	if c <= max && c >= min {
-		return true
-	}
-	return false
-}
-
-func passIsValid2(min int, max int, letter rune, pass []rune) bool {
-	if (pass[min] == letter) != (pass[max] == letter) {
-		return true
-	}
-	return false
-}
-
-type p1 struct {
-	min    int
-	max    int
-	letter string
-	pass   string
-}
-type p2 struct {
-	min    int
-	max    int
-	letter rune
-	pass   []rune
+type gift struct {
+	l, w, h int
 }
 
 func main() {
@@ -55,36 +30,65 @@ func main() {
 
 	b, err := ioutil.ReadFile("d2.data")
 	check(err)
-	expense := strings.Split(string(b), "\n")
-	t1 := []p1{}
-	t2 := []p2{}
-	for _, f := range expense {
-		// 9-13 j: jjjjjjjjjjjjf
-		re := pcre.MustCompile(`(?P<min>\d+)-(?P<max>\d+) (?P<letter>.): (?P<pass>.+)$`, 0)
-		res := re.MatcherString(f, 0)
-		t1 = append(t1, p1{mAtoi(res.GroupString(1)) - 1, mAtoi(res.GroupString(2)) - 1, res.GroupString(3), res.GroupString(4)})
-		t2 = append(t2, p2{mAtoi(res.GroupString(1)) - 1, mAtoi(res.GroupString(2)) - 1, []rune(res.GroupString(3))[0], []rune(res.GroupString(4))})
-	}
+	gifts := strings.Split(string(b), "\n")
+	g := []gift{}
 
+	for _, f := range gifts {
+		l := 0
+		w := 0
+		h := 0
+		fmt.Sscanf(f, "%dx%dx%d", &l, &w, &h)
+		g = append(g, gift{l: l, w: w, h: h})
+	}
+	fmt.Println(g)
 	inputtelapsed := time.Since(tinput)
 	log.Println("Read data:", inputtelapsed)
 	tinput = time.Now()
+	//2*l*w + 2*w*h + 2*h*l.
 	c := 0
-	for _, r := range t1 {
-		if passIsValid(r.min, r.max, r.letter, r.pass) {
-			c++
+	for _, gi := range g {
+		s1 := gi.l * gi.w
+		s2 := gi.w * gi.h
+		s3 := gi.h * gi.l
+		c += (2 * s1) + (2 * s2) + (2 * s3)
+		if s1 <= s2 && s1 <= s3 {
+			c += s1
+			continue
 		}
+		if s2 <= s1 && s2 <= s3 {
+			c += s2
+			continue
+		}
+		if s3 <= s2 && s3 <= s1 {
+			c += s3
+			continue
+		}
+
 	}
 	inputtelapsed = time.Since(tinput)
 	log.Println("Time p1:", inputtelapsed)
 	log.Println(c)
-
 	tinput = time.Now()
+
 	c = 0
-	for _, r := range t2 {
-		if passIsValid2(r.min, r.max, r.letter, r.pass) {
-			c++
+	for _, gi := range g {
+		c += (gi.l * gi.w * gi.h)
+		s1 := gi.l
+		s2 := gi.w
+		s3 := gi.h
+		if s1 >= s2 && s1 >= s3 {
+			c += (2 * s2) + (2 * s3)
+			continue
 		}
+		if s2 >= s1 && s2 >= s3 {
+			c += (2 * s1) + (2 * s3)
+			continue
+		}
+		if s3 >= s2 && s3 >= s1 {
+			c += (2 * s2) + (2 * s1)
+			continue
+		}
+
 	}
 	inputtelapsed = time.Since(tinput)
 	log.Println("Time p2:", inputtelapsed)
