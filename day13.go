@@ -37,17 +37,63 @@ func main() {
 			}
 		}
 	}
-	fmt.Println(buses)
 
 	inputtelapsed := time.Since(tinput)
 	fmt.Println("Read data:", inputtelapsed)
+	min := 9999999999
+	busmin := 0
+	for _, b := range buses {
+		if b == 0 {
+			continue
+		}
+		nmin := ((timestamp / b) + 1) * b
+		if nmin < min {
+			min = nmin
+			busmin = b
+		}
+	}
+	c := busmin * (min - timestamp)
 
 	inputtelapsed = time.Since(tinput)
 	fmt.Println("Time p1:", inputtelapsed)
-	fmt.Println()
+	fmt.Println(c)
 	tinput = time.Now()
+
+	bust := map[int]int{}
+
+	for n, b := range buses {
+		if b == 0 {
+			continue
+		}
+		bust[n] = b
+	}
+	earliest := bust[0]
+	jump := bust[0]
+	for dt, bus := range bust {
+		for {
+			if (earliest+dt)%bus == 0 {
+				break
+			}
+			earliest += jump
+		}
+		jump = findJump(jump, bus)
+
+	}
 
 	inputtelapsed = time.Since(tinput)
 	fmt.Println("Time p2:", inputtelapsed)
-	fmt.Println()
+	fmt.Println(earliest)
+}
+
+func findJump(a, b int) int {
+	c := a
+	d := b
+	for b != 0 {
+		fmt.Println(a)
+		t := b
+		b = a % b
+		a = t
+	}
+	f := a
+	return c * d / f
 }
